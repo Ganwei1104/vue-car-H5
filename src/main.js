@@ -24,35 +24,36 @@ const { NODE_ENV, SENTRY_ENABLED } = process.env
 const PROD = NODE_ENV === 'production'
 
 if (PROD && SENTRY_ENABLED === 'yes') {
-  const { SENTRY_DSN } = process.env
-  const sentry = Report.getInstance(Vue, {
-    dsn: SENTRY_DSN,
-    release: __VERSION__,
-    environment: 'Prod'
-  })
-
-  window.$sentry = sentry
-
-  Vue.config.errorHandler = (error, vm, info) => {
-    window.$sentry.log({
-      error,
-      type: 'vue errorHandler',
-      vm,
-      info
+    const { SENTRY_DSN } = process.env
+    const sentry = Report.getInstance(Vue, {
+        dsn: SENTRY_DSN,
+        release: __VERSION__,
+        environment: 'Prod'
     })
-  }
+
+    window.$sentry = sentry
+
+    Vue.config.errorHandler = (error, vm, info) => {
+        window.$sentry.log({
+            error,
+            type: 'vue errorHandler',
+            vm,
+            info
+        })
+    }
 }
 
 Object.keys(filters).forEach(filterName => {
-  Vue.filter(filterName, filters[filterName])
+    Vue.filter(filterName, filters[filterName])
 })
 
 Vue.use(Vant)
-  .use(bus)
+    .use(bus)
+
 
 new Vue({
-  router,
-  store,
-  i18n,
-  render: h => h(App)
+    router,
+    store,
+    i18n,
+    render: h => h(App)
 }).$mount('#app')
