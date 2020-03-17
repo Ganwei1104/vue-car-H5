@@ -1,121 +1,90 @@
+'use strict'
 const path = require('path')
-const SentryPlugin = require('@sentry/webpack-plugin')
-const VConsolePlugin = require('vconsole-webpack-plugin')
-// const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-const LodashWebpackPlugin = require('lodash-webpack-plugin')
-const webpack = require('webpack')
-const version = require('./package.json').version
-
-const {
-  VUE_APP_TITLE,
-  DEVSERVERPORT,
-  NODE_ENV,
-  VCONSOLE,
-  SENTRY_ENABLED,
-  SENTRY_PLUGIN_ENABLED
-} = process.env
-
-const resolve = dir => path.join(__dirname, dir)
-const DEV = NODE_ENV === 'development'
-const PROD = NODE_ENV === 'production'
-
+const defaultSettings = require('./src/config/index.js')
+function resolve(dir) {
+  return path.join(__dirname, dir)
+}
+const name = defaultSettings.title || 'vue mobile template' // page title
+const port = 9018 // dev port
+const externals = {
+  vue: 'Vue',
+  'vue-router': 'VueRouter',
+  vuex: 'Vuex',
+  vant: 'vant',
+  axios: 'axios'
+}
+// cdn
+const cdn = {
+  // 开发环境
+  dev: {
+    css: [],
+    js: []
+  },
+  // 生产环境
+  build: {
+    css: ['https://cdn.jsdelivr.net/npm/vant@beta/lib/index.css'],
+    js: [
+      'https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/vue-router/3.0.6/vue-router.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/vuex/3.1.1/vuex.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js',
+      'https://cdn.jsdelivr.net/npm/vant@beta/lib/vant.min.js'
+    ]
+  }
+}
 module.exports = {
-  publicPath: !DEV ? './' : '/',
+  publicPath: './', // router hash 模式使用
+  // publicPath: process.env.NODE_ENV === 'development' ? '/' : '/app/', //router history模式使用 需要区分生产环境和开发环境，不然build会报错
   outputDir: 'dist',
   assetsDir: 'static',
-  lintOnSave: DEV,
-  productionSourceMap: PROD && SENTRY_ENABLED === 'yes' && SENTRY_PLUGIN_ENABLED === 'yes',
+  lintOnSave: process.env.NODE_ENV === 'development',
+  productionSourceMap: false,
   devServer: {
-    port: Number(DEVSERVERPORT),
-    open: true,
+    port: port,
+    open: false,
     overlay: {
       warnings: false,
       errors: true
     }
   },
-  pwa: {
-    name: VUE_APP_TITLE,
-    workboxPluginMode: 'InjectManifest',
-    workboxOptions: {
-      swSrc: resolve('src/pwa/service-worker.js')
+
+  configureWebpack: config => {
+    // 为生产环境修改配置...
+    if (process.env.NODE_ENV === 'production') {
+      // externals里的模块不打包
+      Object.assign(config, {
+        name: name,
+        externals: externals
+      })
     }
-  },
-  configureWebpack: {
-    name: VUE_APP_TITLE,
-    resolve: {
-      alias: {
-        '@': resolve('src')
-      }
-    }
-  },
-  pluginOptions: {
-    'style-resources-loader': {
-      preProcessor: 'scss',
-      patterns: [
-        resolve('src/styles/_variables.scss'),
-        resolve('src/styles/_mixins.scss')
-      ]
-    }
+    // 为开发环境修改配置...
+    // if (process.env.NODE_ENV === 'development') {
+    // }
   },
   chainWebpack(config) {
-    config.plugins.delete('preload')
-    config.plugins.delete('prefetch')
+    config.plugins.delete('preload') // TODO: need test
+    config.plugins.delete('prefetch') // TODO: need test
+    // alias
+    config.resolve.alias
+      .set('@', resolve('src'))
+      .set('assets', resolve('src/assets'))
+      .set('api', resolve('src/api'))
+      .set('views', resolve('src/views'))
+      .set('components', resolve('src/components'))
 
-    config.plugin('__VERSION__')
-      .use(new webpack.DefinePlugin({
-        __VERSION__: JSON.stringify(version)
-      }))
-      .end()
-
-    if (!DEV) {
-      config.plugin('loadshReplace')
-        .use(new LodashWebpackPlugin())
-        .end()
-      // if (SENTRY_PLUGIN_ENABLED === 'no') {
-      //   config.plugin('uglifyjs-webpack-plugin')
-      //     .use(new UglifyJsPlugin({
-      //       uglifyOptions: {
-      //         compress: {
-      //           drop_debugger: true,
-      //           drop_console: true
-      //         },
-      //         warnings: false
-      //       },
-      //       sourceMap: false,
-      //       parallel: true
-      //     }))
-      //     .end()
-      // }
-    }
-    config.plugin('VConsolePlugin')
-      .use(new VConsolePlugin({
-        filter: [],
-        enable: DEV && VCONSOLE === 'yes'
-      }))
-      .end()
-
-    config.plugin('ProvidePlugin')
-      .use(new webpack.ProvidePlugin({
-        _: 'lodash'
-      }))
-      .end()
-
-    // set svg-sprite-loader
-    config.module
-      .rule('svg')
-      .exclude.add(resolve('src/icons'))
-      .end()
-    config.module
-      .rule('icons')
-      .test(/\.svg$/)
-      .include.add(resolve('src/icons'))
-      .end()
-      .use('svg-sprite-loader')
-      .loader('svg-sprite-loader')
-      .options({
-        symbolId: 'icon-[name]'
-      })
-      .end()
+    /**
+     * 添加CDN参数到htmlWebpackPlugin配置中， 详见public/index.html 修改
+     */
+    config.plugin('html').tap(args => {
+      if (process.env.NODE_ENV === 'production') {
+        args[0].cdn = cdn.build
+      }
+      if (process.env.NODE_ENV === 'development') {
+        args[0].cdn = cdn.dev
+      }
+      return args
+    })
 
     // set preserveWhitespace
     config.module
@@ -129,57 +98,39 @@ module.exports = {
       .end()
 
     config
-      .when(DEV, config => config.devtool('cheap-source-map'))
+      // https://webpack.js.org/configuration/devtool/#development
+      .when(process.env.NODE_ENV === 'development', config => config.devtool('cheap-source-map'))
 
-    config
-      .when(!DEV,
-        config => {
-          config
-            .plugin('ScriptExtHtmlWebpackPlugin')
-            .after('html')
-            .use('script-ext-html-webpack-plugin', [{
-              inline: /runtime\..*\.js$/
-            }])
-            .end()
-          config
-            .optimization.splitChunks({
-              chunks: 'all',
-              cacheGroups: {
-                libs: {
-                  name: 'chunk-libs',
-                  test: /[\\/]node_modules[\\/]/,
-                  priority: 10,
-                  chunks: 'initial'
-                },
-                elementUI: {
-                  name: 'chunk-vantUI',
-                  priority: 20,
-                  test: /[\\/]node_modules[\\/]_?vant(.*)/
-                },
-                commons: {
-                  name: 'chunk-commons',
-                  test: resolve('src/components'),
-                  minChunks: 3,
-                  priority: 5,
-                  reuseExistingChunk: true
-                }
-              }
-            })
-          config.optimization.runtimeChunk('single')
+    config.when(process.env.NODE_ENV !== 'development', config => {
+      config
+        .plugin('ScriptExtHtmlWebpackPlugin')
+        .after('html')
+        .use('script-ext-html-webpack-plugin', [
+          {
+            // `runtime` must same as runtimeChunk name. default is `runtime`
+            inline: /runtime\..*\.js$/
+          }
+        ])
+        .end()
+      config.optimization.splitChunks({
+        chunks: 'all',
+        cacheGroups: {
+          commons: {
+            name: 'chunk-commons',
+            test: resolve('src/components'), // can customize your rules
+            minChunks: 3, //  minimum common number
+            priority: 5,
+            reuseExistingChunk: true
+          },
+          libs: {
+            name: 'chunk-libs',
+            chunks: 'initial', // only package third parties that are initially dependent
+            test: /[\\/]node_modules[\\/]/,
+            priority: 10
+          }
         }
-      )
-
-    if (!DEV) {
-      if (PROD && SENTRY_ENABLED === 'yes' && SENTRY_PLUGIN_ENABLED === 'yes') {
-        config.plugin('sentryPlugin')
-          .use(new SentryPlugin({
-            release: version,
-            include: path.join(__dirname, './dist/static/js'),
-            urlPrefix: '~/vue-h5-template/statis/js',
-            ignore: ['node_modules']
-          }))
-          .end()
-      }
-    }
+      })
+      config.optimization.runtimeChunk('single')
+    })
   }
 }

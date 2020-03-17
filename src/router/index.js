@@ -1,77 +1,33 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Router from 'vue-router'
 
-import Layout from '@/layout'
-import componentsRouter from './modules/components'
-
-Vue.use(VueRouter)
-
-export const routes = [{
-        path: '/redirect',
-        component: Layout,
-        children: [{
-            path: '/redirect/:path(.*)',
-            component: () =>
-                import ('@/pages/redirect/index')
-        }]
+Vue.use(Router)
+export const router = [{
+        path: '/',
+        name: 'index',
+        component: () =>
+            import ('@/views/home/index'),
+        meta: {
+            keepAlive: false
+        }
     },
     {
-        path: '/login',
-        component: Layout,
-        redirect: '/login',
-        children: [{
-            path: 'login',
-            component: () =>
-                import ('@/pages/login/index'),
-            name: 'Login',
-            meta: { title: '登录' }
-        }]
+        path: '/menu',
+        name: 'Menu',
+        component: () =>
+            import ('@/views/menu/index'),
+        meta: {
+            keepAlive: false
+        }
     },
-    {
-        path: '',
-        component: Layout,
-        redirect: '/home',
-        children: [{
-            path: 'home',
-            component: () =>
-                import ('@/pages/home/index'),
-            name: 'Home',
-            meta: { title: '首页' }
-        }]
-    },
-    {
-        path: '/test',
-        component: Layout,
-        children: [{
-                path: 'create',
-                component: () =>
-                    import ('@/pages/test/index'),
-                name: 'CreateTest',
-                meta: { title: '添加地址' }
-            },
-            {
-                path: 'edit/:id',
-                component: () =>
-                    import ('@/pages/test/index'),
-                name: 'EditTest',
-                meta: { title: '修改地址', keepAlive: true }
-            }
-        ]
-    },
-    componentsRouter
 ]
 
+const createRouter = () =>
+    new Router({
+        // mode: 'history', // 如果你是 history模式 需要配置vue.config.js publicPath
+        // base: '/app/',
+        scrollBehavior: () => ({ y: 0 }),
+        routes: router
+    })
 
-const createRouter = () => new VueRouter({
-    mode: 'history',
-    scrollBehavior: () => ({ y: 0 }),
-    routes
-})
-
-const router = createRouter()
-
-export function resetRouter() {
-    const newRouter = createRouter()
-    router.matcher = newRouter.matcher
-}
-export default router
+export default createRouter()

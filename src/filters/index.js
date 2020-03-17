@@ -1,17 +1,7 @@
-import dayjs from 'dayjs'
+import Vue from 'vue'
+import * as filter from './filter'
 
-const timeFilter = (value) => {
-  value = value.toString()
-  if (value) {
-    if (value.length === 13) {
-      return dayjs(Number(value)).format('YYYY-MM-DD HH:mm:ss')
-    }
-    return dayjs.unix(Number(value)).format('YYYY-MM-DD HH:mm:ss')
-  } else {
-    return '-'
-  }
-}
+Object.keys(filter).forEach(k => Vue.filter(k, filter[k]))
 
-export default {
-  timeFilter
-}
+Vue.prototype.$formatDate = Vue.filter('formatDate')
+Vue.prototype.$hidePhone = Vue.filter('hidePhone')

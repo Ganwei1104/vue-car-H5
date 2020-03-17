@@ -1,37 +1,20 @@
-import { getToken, removeToken } from '@/core/services/cache'
-
 const state = {
-  token: getToken()
+    userName: ''
 }
-
 const mutations = {
-  SET_TOKEN: (state, token) => {
-    state.token = token
-  }
+    SET_USER_NAME(state, name) {
+        state.userName = name
+    }
 }
-
 const actions = {
-  getInfo({ commit, state }) {
-
-  },
-
-  logout({ commit, state, dispatch }) {
-    commit('SET_TOKEN', '')
-    removeToken()
-  },
-
-  resetToken({ commit }) {
-    return new Promise(resolve => {
-      commit('SET_TOKEN', '')
-      removeToken()
-      resolve()
-    })
-  }
+    // 设置name
+    setUserName({ commit }, name) {
+        commit('SET_USER_NAME', name)
+    }
 }
-
 export default {
-  namespaced: true,
-  state,
-  mutations,
-  actions
+    namespaced: true,
+    state,
+    mutations,
+    actions
 }
