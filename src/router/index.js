@@ -2,13 +2,25 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 Vue.use(Router)
+
 export const router = [{
+        path: '/login',
+        name: 'Login',
+        component: () =>
+            import ('@/views/login/index'),
+        meta: {
+            keepAlive: false,
+            requireAuth: false
+        }
+    },
+    {
         path: '/',
         name: 'index',
         component: () =>
             import ('@/views/home/index'),
         meta: {
-            keepAlive: false
+            keepAlive: false,
+            requireAuth: false
         }
     },
     {
@@ -17,7 +29,8 @@ export const router = [{
         component: () =>
             import ('@/views/menu/index'),
         meta: {
-            keepAlive: false
+            keepAlive: false,
+            requireAuth: true
         }
     },
 ]

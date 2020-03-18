@@ -16,9 +16,12 @@ import 'lib-flexible/flexible.js'
 import './filters'
 Vue.config.productionTip = false
 
+//路由拦截
+import '@/permission'
+
 new Vue({
-  el: '#app',
-  router,
-  store,
-  render: h => h(App)
+    el: '#app',
+    router,
+    store,
+    render: h => h(App)
 })

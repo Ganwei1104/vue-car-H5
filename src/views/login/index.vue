@@ -1,19 +1,17 @@
 <template>
     <div>
-        555555555555
-        <!-- 底部菜单 -->
-        <my-tabbar></my-tabbar>
-        <!-- 底部菜单 -->
+        this is login page
     </div>
 </template>
 
 <script>
-import MyTabbar from '@/components/mytabbar'
 export default {
-    components:{MyTabbar},
+    components: {
+
+    },
     data() {
         return {
-            
+
         };
     },
     computed: {

@@ -8,11 +8,9 @@
       </h2>
     </div>
     <van-cell icon="success" v-for="item in list" :key="item" :title="item" />
-    <!-- <van-tabbar fixed v-model="active" @change="onChange">
-      <van-tabbar-item icon="home-o">首页</van-tabbar-item>
-      <van-tabbar-item icon="good-job-o">github</van-tabbar-item>
-    </van-tabbar> -->
+    <!-- 底部菜单 -->
     <my-tabbar></my-tabbar>
+    <!-- 底部菜单 -->
   </div>
 </template>
 
@@ -47,7 +45,7 @@ export default {
   computed: {},
 
   mounted() {
-    this.initData()
+    // this.initData()
   },
 
   methods: {
@@ -58,9 +56,6 @@ export default {
         .then(() => {})
         .catch(() => {})
     },
-    onChange(index) {
-      if (index === 1) window.location.href = 'https://github.com/sunnie1992/vue-h5-template'
-    }
   }
 }
 </script>
