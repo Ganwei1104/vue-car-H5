@@ -1,6 +1,9 @@
 <template>
     <div>
         this is login page
+        <div class="demo">
+            
+        </div>
     </div>
 </template>
 
@@ -27,5 +30,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
+.demo{
+    height: 500px;
+    border: 1px solid red;
+    width: 800px;
+    overflow-x: auto;
+}
 </style>

@@ -7,14 +7,15 @@ router.beforeEach((to, from, next) => {
     //to 目的路由对象 from 来源路由对象
     if (to.meta.requireAuth) {
         // let token = window.localStorage.getItem('token')
-        let token = getToken()
-            //判断是否存在token
+        let token = getToken();
+        console.log('----------', token);
+        //判断是否存在token
         if (token) {
             //拉去用户信息
             store.dispatch('GetUser')
             next()
         } else {
-            store.dispatch('logOut')
+            store.dispatch('FedLogOut')
             next({
                 path: '/login',
                 query: { redirect: to.fullPath }
