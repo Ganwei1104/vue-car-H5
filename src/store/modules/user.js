@@ -5,6 +5,7 @@ const state = {
     id: '',
     token: getToken(),
     userName: '',
+    seesion: false,
     point: {},
 }
 const mutations = {
@@ -16,6 +17,9 @@ const mutations = {
     },
     SET_USER_NAME(state, name) {
         state.userName = name
+    },
+    SET_SESSION(state, seesion) {
+        state.seesion = seesion
     },
     SET_POINT(state, point) {
         state.point = point
