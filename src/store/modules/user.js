@@ -31,9 +31,9 @@ const mutations = {
 const actions = {
     // 登录
     Login({ commit }, userInfo) {
-        const userName = userInfo.username.trim()
+        const userPwd = userInfo.userPwd.trim();
         return new Promise((resolve, reject) => {
-            login(userName, userInfo.userPwd).then(response => {
+            login(userInfo.userName, userPwd).then(response => {
                 /* 登录信息存cookie */
                 for (var key in response.data) {
                     setCookie('jiatu_' + key, response.data[key], {

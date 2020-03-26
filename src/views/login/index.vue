@@ -1,24 +1,30 @@
 <template>
     <div class="login">
         <div class="container">
-            <van-form @submit="onSubmit">
-                <van-field
-                    v-model="formData.username"
-                    name="用户名"
-                    label="用户名"
-                    :rules="[{ required: true, message: '请填写用户名' }]"
-                />
-                <van-field
-                    v-model="formData.password"
-                    type="password"
-                    name="密码"
-                    label="密码"
-                    :rules="[{ required: true, message: '请填写密码' }]"
-                />
-                <div style="margin: 16px;">
-                    <van-button round block type="info" native-type="submit">提交</van-button>
+            <van-Form @submit="onSubmit">
+                <div class="login_form">
+                    <van-field
+                        v-model="formData.userName"
+                        name="用户名"
+                        left-icon="manager"
+                        placeholder="请输入用户名"
+                        label=""
+                        :rules="[{ required: true, message: '用户名不能为空' }]"
+                    />
+                    <van-field
+                        v-model="formData.userPwd"
+                        type="password"
+                        name="密码"
+                        left-icon="lock"
+                        placeholder="请输入密码"
+                        label=""
+                        :rules="[{ required: true, message: '密码不能为空' }]"
+                    />
                 </div>
-            </van-form>
+                <div style="margin: 16px 0;">
+                    <van-button round block type="info" :loading="loading" native-type="submit">提交</van-button>
+                </div>    
+            </van-Form>
         </div>
     </div>
 </template>
@@ -30,7 +36,8 @@ export default {
     },
     data() {
         return {
-            formData:{}
+            formData:{},
+            loading:false,
         };
     },
     computed: {
@@ -41,7 +48,15 @@ export default {
     },
     methods: {
         onSubmit(values){
-            console.log('-------------',values);
+            console.log('-------------',this.formData);
+            this.loading = true;
+            this.$store.dispatch('Login', this.formData).then(() => {
+                this.loading = false;
+                this.$router.push({ path: '/' })
+            }).catch((error) => {
+                console.log('-------',error);
+                this.loading = false
+            })
         }
     },
 };
@@ -58,12 +73,17 @@ export default {
         right: 0;
         bottom: 0;
         padding: 20px;
-        background: url('../../assets/images/timg (1).jpg');
-        background-size: cover;
-        .login_from{
-            width: 100%;
-            height: 100%;
-            background-color: rgba($color: #000000, $alpha: 0.5);
+        // background: url('../../assets/images/timg (1).jpg');
+        // background-size: cover;
+        background-color: salmon;
+        .login_form{
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .van-button--info{
+            color: #fff;
+            background-color: #e44c3b;
+            border: 0.02667rem solid #e44c3b;
         }
     }
 }
