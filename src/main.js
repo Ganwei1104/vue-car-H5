@@ -17,7 +17,7 @@ import './filters'
 Vue.config.productionTip = false
 
 //路由拦截
-import '@/permission'
+// import '@/permission'
 
 new Vue({
     el: '#app',

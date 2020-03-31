@@ -1,9 +1,12 @@
-import { setCookie } from '@/utils/auth'
+import { setCookie } from '@/utils/auth1'
 import { login, getInfo } from '@/api/user'
+
 
 const state = {
     id: '',
+    ids: [],
     userName: '',
+    avatar: '',
     seesion: false,
     point: {},
 }
@@ -11,11 +14,17 @@ const mutations = {
     SET_ID: (state, id) => {
         state.id = id
     },
+    SET_IDS: (state, ids) => {
+        state.ids = ids
+    },
     SET_TOKEN: (state, token) => {
         state.token = token
     },
     SET_USER_NAME(state, name) {
         state.userName = name
+    },
+    SET_AVATAR: (state, avatar) => {
+        state.avatar = avatar
     },
     SET_SESSION(state, seesion) {
         state.seesion = seesion
@@ -36,7 +45,6 @@ const actions = {
                 for (var key in response.data) {
                     setCookie('jiatu_' + key, response.data[key], {
                         expires: new Date().getTime() + 1e3 * 60 * 60 * 24,
-                        path: '/'
                     })
                 }
                 commit('SET_ID', response.data.userId)

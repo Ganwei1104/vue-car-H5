@@ -52,7 +52,6 @@ export default {
             this.formData.userPwd = this.formData.userPwd.trim();
             this.$store.dispatch('Login', this.formData).then(() => {
                 this.loading = false;
-                // this.$router.push({ path: '/' })
                 let redirect = decodeURIComponent(this.$route.query.redirect || '/');
                 this.$router.push({
                     path: redirect
