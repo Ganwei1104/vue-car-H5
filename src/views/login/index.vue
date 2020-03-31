@@ -48,11 +48,15 @@ export default {
     },
     methods: {
         onSubmit(values){
-            console.log('-------------',this.formData);
             this.loading = true;
+            this.formData.userPwd = this.formData.userPwd.trim();
             this.$store.dispatch('Login', this.formData).then(() => {
                 this.loading = false;
-                this.$router.push({ path: '/' })
+                // this.$router.push({ path: '/' })
+                let redirect = decodeURIComponent(this.$route.query.redirect || '/');
+                this.$router.push({
+                    path: redirect
+                })
             }).catch((error) => {
                 console.log('-------',error);
                 this.loading = false

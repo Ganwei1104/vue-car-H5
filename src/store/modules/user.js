@@ -1,9 +1,8 @@
-import { getToken, setToken, removeToken } from '@/utils/auth'
-import { login, getUserInfo } from '@/api/user'
+import { setCookie } from '@/utils/auth'
+import { login, getInfo } from '@/api/user'
 
 const state = {
     id: '',
-    token: getToken(),
     userName: '',
     seesion: false,
     point: {},
@@ -31,9 +30,8 @@ const mutations = {
 const actions = {
     // 登录
     Login({ commit }, userInfo) {
-        const userPwd = userInfo.userPwd.trim();
         return new Promise((resolve, reject) => {
-            login(userInfo.userName, userPwd).then(response => {
+            login(userInfo).then(response => {
                 /* 登录信息存cookie */
                 for (var key in response.data) {
                     setCookie('jiatu_' + key, response.data[key], {
@@ -41,7 +39,6 @@ const actions = {
                         path: '/'
                     })
                 }
-                commit('SET_TOKEN', response.token)
                 commit('SET_ID', response.data.userId)
                 commit('SET_IDS', response.data.resIds)
                 commit('SET_SESSION', true)
@@ -54,7 +51,7 @@ const actions = {
     //用户信息
     GetUser({ commit, state }) {
         return new Promise((resolve, reject) => {
-            getUserInfo(state.id).then(response => {
+            getInfo(state.id).then(response => {
                 const data = response.data;
                 if (response.status === 200) {
                     // 把 userInfo 存进 Vuex
