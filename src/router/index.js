@@ -45,6 +45,16 @@ export const router = [{
             requireAuth: true
         }
     },
+    {
+        path: '/system',
+        name: 'System',
+        component: () =>
+            import ('@/views/system/index'),
+        meta: {
+            keepAlive: false,
+            requireAuth: true
+        }
+    }
 ]
 
 const createRouter = () =>
