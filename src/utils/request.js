@@ -21,9 +21,15 @@ service.interceptors.request.use(
                     forbidClick: true
                 })
             }
-            if (store.getters.token) {
-                config.headers['X-Token'] = getToken() // 让每个请求携带自定义token
+            // 设置请求头，避免跨域问题
+            if (config.ContentType === undefined) {
+                config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+            } else {
+                config.headers['Content-Type'] = config.ContentType;
             }
+            // if (store.getters.token) {
+            //     config.headers['X-Token'] = getToken() // 让每个请求携带自定义token
+            // }
             return config
         },
         error => {

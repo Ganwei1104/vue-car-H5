@@ -1,5 +1,5 @@
 import { setCookie } from '@/utils/auth1'
-import { login, getInfo } from '@/api/user'
+import { login, logout, getInfo } from '@/api/user'
 
 
 const state = {
@@ -16,9 +16,6 @@ const mutations = {
     },
     SET_IDS: (state, ids) => {
         state.ids = ids
-    },
-    SET_TOKEN: (state, token) => {
-        state.token = token
     },
     SET_USER_NAME(state, name) {
         state.userName = name
@@ -79,7 +76,6 @@ const actions = {
                 commit('SET_ID', '')
                 commit('SET_IDS', [])
                 commit('SET_SESSION', false)
-                    // removeToken()
                 resolve()
             }).catch(error => {
                 reject(error)
@@ -91,7 +87,6 @@ const actions = {
         return new Promise(resolve => {
             commit('SET_ID', '')
             commit('SET_SESSION', false)
-                // removeToken()
             resolve()
         })
     }
