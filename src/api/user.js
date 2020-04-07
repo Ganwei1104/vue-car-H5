@@ -5,27 +5,25 @@ import request from '@/utils/request'
 // 登录
 export function login(params) {
     return request({
-        url: '/login',
+        url: 'system/login',
         method: 'post',
-        data: qs.stringify(params)
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: params
     })
 }
-/**
- * 获取用户信息方法
- * @param id 入参 用户id
- */
-export function getInfo(id) {
+//用户信息
+export function getInfo() {
     return request({
-        url: '/org/group/get',
-        method: 'post',
-        params: { id: id }
+        url: 'system/api/v1/sysuser/info',
+        method: 'get'
     })
 }
-// 用户信息
-export function getUserInfo(params) {
+//登出
+export function logout() {
     return request({
-        url: '/user/userinfo',
-        method: 'get',
-        data: qs.stringify(params)
+        url: 'system/logout',
+        method: 'post'
     })
 }

@@ -17,7 +17,7 @@
 <script>
 import MyTabbar from '@/components/mytabbar'
 // 请求接口
-import {getUserInfo} from '@/api/user.js'
+import {getInfo} from '@/api/user.js'
 export default {
   components: {MyTabbar},
 
@@ -52,7 +52,7 @@ export default {
     // 请求数据案例
     initData() {
       // 请求接口数据，仅作为展示，需要配置src->config下环境文件
-      getUserInfo()
+      getInfo()
         .then(() => {})
         .catch(() => {})
     },

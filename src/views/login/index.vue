@@ -37,7 +37,7 @@ export default {
     data() {
         return {
             formData:{},
-            loading:false,
+            loading:false,  //按钮loading
         };
     },
     computed: {
