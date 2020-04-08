@@ -4,7 +4,7 @@
             <van-Form @submit="onSubmit">
                 <div class="login_form">
                     <van-field
-                        v-model="formData.userName"
+                        v-model="formData.username"
                         name="用户名"
                         left-icon="manager"
                         placeholder="请输入用户名"
@@ -12,7 +12,7 @@
                         :rules="[{ required: true, message: '用户名不能为空' }]"
                     />
                     <van-field
-                        v-model="formData.userPwd"
+                        v-model="formData.password"
                         type="password"
                         name="密码"
                         left-icon="lock"
@@ -30,6 +30,9 @@
 </template>
 
 <script>
+import { getToken, setToken, removeToken } from "@/utils/auth";
+import md5 from "js-md5";
+import { Toast } from 'vant'
 export default {
     components: {
 
@@ -49,16 +52,25 @@ export default {
     methods: {
         onSubmit(values){
             this.loading = true;
-            this.formData.userPwd = this.formData.userPwd.trim();
-            this.$store.dispatch('Login', this.formData).then(() => {
+            let loginForm = {
+                username: this.formData.username,
+                password:
+                this.formData.password.trim().length < 32
+                    ? md5(this.formData.password)
+                    : this.formData.password.trim()
+            };
+            this.$store.dispatch('Login',loginForm).then((res) => {
+                setToken(loginForm.username, "username");
+                setToken(loginForm.password, "userpassword");
                 this.loading = false;
                 let redirect = decodeURIComponent(this.$route.query.redirect || '/');
-                this.$router.push({
-                    path: redirect
-                })
+                    this.$router.push({
+                        path: redirect
+                    })
             }).catch((error) => {
                 console.log('-------',error);
-                this.loading = false
+                this.loading = false;
+                Toast.fail(error.message);
             })
         }
     },

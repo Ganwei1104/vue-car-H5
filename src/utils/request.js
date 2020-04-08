@@ -1,8 +1,9 @@
 import axios from 'axios'
 import store from '@/store'
+import router from '@/router'
 import qs from 'qs' // 将参数序列化
 import { getToken } from '@/utils/auth'
-import { Toast } from 'vant'
+import { Toast, Dialog } from 'vant'
 // 根据环境不同引入不同api地址
 import { baseApi } from '@/config'
 // create an axios instance
@@ -36,7 +37,7 @@ service.interceptors.request.use(
                 config.headers['Content-Type'] === 'application/json;charset=UTF-8'
             }
             if (store.getters.token) {
-                config.headers['X-Token'] = getToken() // 让每个请求携带自定义token
+                config.headers['token'] = getToken() // 让每个请求携带自定义token
             }
             return config
         },
@@ -51,15 +52,25 @@ service.interceptors.response.use(
     response => {
         Toast.clear()
         const res = response.data
-        if (res.status && res.status !== 200) {
+        if (res.code && res.code !== 200) {
             Toast.loading({
                     forbidClick: true
                 })
                 // 登录超时,重新登录
-            if (res.status === 501) {
-                store.dispatch('FedLogOut').then(() => {
-
-                })
+            if (res.code === 501) {
+                Dialog.confirm({
+                    title: '提示',
+                    message: '你已被登出，可以取消继续留在该页面，或者重新登录',
+                    confirmButtonText: '重新登录'
+                }).then(() => { // on confirm
+                    store.dispatch('FedLogOut').then(() => {
+                            location.reload() // 为了重新实例化vue-router对象 避免bug
+                            this.$router.push({
+                                name: Login
+                            })
+                        })
+                        // on cancel
+                }).catch(() => {});
             }
             return Promise.reject(res || 'error')
         } else {

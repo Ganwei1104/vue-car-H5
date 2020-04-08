@@ -55,6 +55,7 @@ const actions = {
     FedLogOut({ commit }) {
         return new Promise(resolve => {
             commit('SET_TOKEN', '')
+            removeToken()
             resolve()
         })
     }
