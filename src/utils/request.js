@@ -1,6 +1,5 @@
 import axios from 'axios'
 import store from '@/store'
-import router from '@/router'
 import qs from 'qs' // 将参数序列化
 import { getToken } from '@/utils/auth'
 import { Toast, Dialog } from 'vant'
