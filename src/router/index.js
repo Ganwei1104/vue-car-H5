@@ -59,7 +59,7 @@ export const router = [{
         path: '/message',
         name: 'Message',
         component: () =>
-            import ('@/views/system/sonPages/message'),
+            import ('@/views/system/sonPages/message/index'),
         meta: {
             keepAlive: false,
             requireAuth: true
